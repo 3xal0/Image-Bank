@@ -1,0 +1,15 @@
+Website :Image Bank.
+Realised during 05/XX/2022.
+MVC method used to construct this project (Models,Views,Controllers).
+This project do stock upper than thousand images, so we have thought at a method who can parse many images without big latence (caused by type:string comparison)
+
+This project compare id's and not string's to be speeder. To make that at every tag's are attribuate an id (the table 'tag_register' had all tag's ) who be parsed and compared.
+So in the table'stockage', tag's are only id's.
+
+The '.htaccess' redirect all request on the index.php who redirect in the router.
+
+Models : File containing files who communicate with the database
+Controllers : File containing all methods who parse,calculate,generate. He contain to the "routeur".This file redirect any request at the good location.
+Views : File containig files visible by users. He containing all JS and Jquery request to.
+Public : File who containing all images.
+

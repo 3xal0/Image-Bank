@@ -1,0 +1,124 @@
+<?php
+class PagedownController extends BDD
+{
+    public function __construct($params)
+    {
+        $adresse = $_SERVER['REQUEST_URI'];
+        //Parsing URL to get tag's entered
+        $tag = explode('/', $adresse);
+        $tag = end($tag);
+        $tag = explode('&', $tag);
+        $page = $tag[1];
+        $tag = explode('=', $tag[0]);
+        $tag = end($tag);
+        if (isset($url) && count($url) < 1) {
+            require_once("Views/error.php");
+        } else {
+            //launching the SearchControl system with the function Research
+            if (!isset($set)) {
+                $set = 0;
+            }
+            $search = $this->Research($tag, $page, $set);
+            if ($search == null) {
+                return;
+            }
+            $this->Affichage($search);
+            return;
+        }
+    }
+
+    function Parser($inData)
+    { //this function get all tag's and compare them
+        $data = $val  =  array();
+
+
+        if ($inData != null) {
+            $tags = explode(',', $inData); //create an array of tag's researched
+            $img = $this->getET('tag_register'); // get Database tag's
+            for ($n = 0; $n < count($img); $n++) { //Exctract all tag's and id's 
+                $val = $img[$n];
+                if (array_search($val[1], $tags) !== false) { //compare tag's and user search
+                    array_push($data, $val[0]);
+                }
+            }
+
+            if ($data == null) {
+                echo ("error");
+            } else {
+                return $data; // data is the array of id
+                echo "hye";
+            }
+        }
+    }
+
+
+    function Selector($id, $page, $set)
+    {
+        if ($set == null) {
+            $set = 0;
+        }
+        session_start();
+        $Countoff = count($_SESSION['offset']);
+
+        $i = 0;
+        $tab = array();
+        if($Countoff<= 2){$img = $this->getET('stockage');}else{
+        $img = $this->getTags('stockage', ($_SESSION['offset'][$Countoff - 3]));} //get images and they parameters (id's,tag id's,url )
+        $length = count($img);
+        for ($n = 0; $n < $length; $n++) {
+            $val = $img[$n];
+            $IDIMG = $val[1];
+            $ParseTag = explode(',', $IDIMG);
+            foreach ($id as $nbr) {
+                if (array_search($nbr, $ParseTag) !== false) { //compare tag's and user search
+                    $URLIMG = $val[2];
+                    array_push($tab, $URLIMG);
+                    $i++;
+                    if ($i >= 6) {
+                        if($Countoff>2 ){
+                        unset($_SESSION['offset'][$Countoff - 1]);
+                        }
+                        return $tab;
+                    }
+                }
+            }
+        }
+            return $tab;    
+        // on retourne un tableau avec les id correspondant
+    }
+
+
+
+
+
+    function Affichage($URL)
+    {
+        //this function will return a div who containg all images corresponding and a bouton to Dl it
+        echo "<div class=articles >";
+        foreach ($URL as $n) {
+            if (strstr($n, ".mp3") || strstr($n, ".wav") || strstr($n, ".mp4") || strstr($n, ".ogg")) {
+                $type = explode('.', $n);
+                echo "<li class=vfile><video class =video width=500  controls><source src=../$n type=video/$type[1]></video></li>";
+            } else {
+                $sizeinfo = getimagesize($n);
+                $tabimg = array();
+                array_push($tabimg, $sizeinfo[0], $sizeinfo['mime']);
+                $info = implode(',', $tabimg);
+                echo "   <li class=vfile><div class=picture><input type=image src=../$n id=Select class=image onclick=trueimg(src) ><button class=parameters type=button id=$n name=$info onclick=spawn(id,name)><img src=../public/1.png class=screw></button></input></div></li> ";
+            }
+        }
+        echo "</div>";
+    }
+
+
+    function Research($data, $page, $set)
+    {
+        //this function manage the research
+        $parse = $this->Parser($data);
+        if ($parse == null) {
+            return;
+        }
+        $select = $this->Selector($parse, $page, $set);
+        return $select;
+    }
+}

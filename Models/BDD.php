@@ -7,7 +7,7 @@ abstract class BDD {
 private static $_bdd1;
 
 private static function setBdd1(){
-    self::$_bdd1 = new PDO('mysql:host=localhost;dbname=bijoggva_bdd;charset=utf8','bijoggva_user','259AxO436');
+    self::$_bdd1 = new PDO('mysql:host=localhost;dbname=img_stock;charset=utf8','root','');
     self::$_bdd1->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 }
 
